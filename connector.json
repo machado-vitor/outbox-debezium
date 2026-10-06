@@ -12,7 +12,6 @@
   "publication.autocreate.mode": "filtered",
   "table.include.list": "public.outbox",
   "snapshot.mode": "no_data",
-  "tombstones.on.delete": "false",
   "key.converter": "org.apache.kafka.connect.storage.StringConverter",
   "value.converter": "org.apache.kafka.connect.storage.StringConverter",
   "header.converter": "org.apache.kafka.connect.storage.StringConverter",

@@ -22,7 +22,6 @@ import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,12 +45,11 @@ class DebeziumOutboxTest {
     static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer("postgres:18.6-alpine")
             .withNetwork(NET).withNetworkAliases("postgres")
             .withUsername("outbox").withPassword("outbox").withDatabaseName("outbox")
-            .withCommand("postgres", "-c", "wal_level=logical", "-c", "max_wal_senders=4", "-c", "max_replication_slots=4")
+            .withCommand("postgres", "-c", "wal_level=logical")
             .withCopyFileToContainer(MountableFile.forHostPath("schema.sql"), "/docker-entrypoint-initdb.d/schema.sql");
 
     static final KafkaContainer KAFKA = new KafkaContainer("apache/kafka:4.3.1")
-            .withNetwork(NET).withNetworkAliases("kafka").withListener("kafka:19092")
-            .withEnv("KAFKA_AUTO_CREATE_TOPICS_ENABLE", "false");
+            .withNetwork(NET).withNetworkAliases("kafka").withListener("kafka:19092");
 
     static final GenericContainer<?> CONNECT = new GenericContainer<>("quay.io/debezium/connect:3.3.2.Final")
             .withNetwork(NET).dependsOn(POSTGRES, KAFKA)
@@ -60,10 +58,7 @@ class DebeziumOutboxTest {
                     "GROUP_ID", "connect",
                     "CONFIG_STORAGE_TOPIC", "connect_configs",
                     "OFFSET_STORAGE_TOPIC", "connect_offsets",
-                    "STATUS_STORAGE_TOPIC", "connect_statuses",
-                    "CONFIG_STORAGE_REPLICATION_FACTOR", "1",
-                    "OFFSET_STORAGE_REPLICATION_FACTOR", "1",
-                    "STATUS_STORAGE_REPLICATION_FACTOR", "1"))
+                    "STATUS_STORAGE_TOPIC", "connect_statuses"))
             .withExposedPorts(8083)
             .waitingFor(Wait.forHttp("/connectors").forPort(8083).withStartupTimeout(Duration.ofMinutes(2)));
 
@@ -77,13 +72,6 @@ class DebeziumOutboxTest {
         }
         db = connect();
         registerConnector();
-    }
-
-    @AfterAll
-    static void stop() {
-        CONNECT.stop();
-        KAFKA.stop();
-        POSTGRES.stop();
     }
 
     @Test
