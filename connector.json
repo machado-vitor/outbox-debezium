@@ -1,35 +1,27 @@
 {
-  "name": "debezium-connector",
-  "config": {
-    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
-
-    "database.hostname": "postgres",
-    "database.port": "5432",
-    "database.user": "outbox",
-    "database.password": "outbox",
-    "database.dbname": "outbox",
-
-    "topic.prefix": "cdc",
-    "plugin.name": "pgoutput",
-    "slot.name": "outbox_slot",
-    "publication.name": "outbox_pub",
-    "publication.autocreate.mode": "filtered",
-
-    "table.include.list": "public.outbox",
-    "snapshot.mode": "no_data",
-    "tombstones.on.delete": "false",
-
-    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
-    "value.converter": "org.apache.kafka.connect.storage.StringConverter",
-    "header.converter": "org.apache.kafka.connect.storage.StringConverter",
-
-    "transforms": "outbox",
-    "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
-    "transforms.outbox.table.field.event.id": "event_id",
-    "transforms.outbox.table.field.event.key": "aggregate_id",
-    "transforms.outbox.table.field.event.payload": "payload",
-    "transforms.outbox.table.fields.additional.placement": "event_id:header:event_id,event_type:header:event_type",
-    "transforms.outbox.route.by.field": "event_type",
-    "transforms.outbox.route.topic.replacement": "order.events"
-  }
+  "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+  "database.hostname": "postgres",
+  "database.port": "5432",
+  "database.user": "outbox",
+  "database.password": "outbox",
+  "database.dbname": "outbox",
+  "topic.prefix": "cdc",
+  "plugin.name": "pgoutput",
+  "slot.name": "outbox_slot",
+  "publication.name": "outbox_pub",
+  "publication.autocreate.mode": "filtered",
+  "table.include.list": "public.outbox",
+  "snapshot.mode": "no_data",
+  "tombstones.on.delete": "false",
+  "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+  "value.converter": "org.apache.kafka.connect.storage.StringConverter",
+  "header.converter": "org.apache.kafka.connect.storage.StringConverter",
+  "transforms": "outbox",
+  "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
+  "transforms.outbox.table.field.event.id": "event_id",
+  "transforms.outbox.table.field.event.key": "aggregate_id",
+  "transforms.outbox.table.field.event.payload": "payload",
+  "transforms.outbox.table.fields.additional.placement": "event_id:header:event_id,event_type:header:event_type",
+  "transforms.outbox.route.by.field": "event_type",
+  "transforms.outbox.route.topic.replacement": "order.events"
 }
