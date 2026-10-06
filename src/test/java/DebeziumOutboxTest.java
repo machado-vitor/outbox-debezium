@@ -60,7 +60,7 @@ class DebeziumOutboxTest {
                     "OFFSET_STORAGE_TOPIC", "connect_offsets",
                     "STATUS_STORAGE_TOPIC", "connect_statuses"))
             .withExposedPorts(8083)
-            .waitingFor(Wait.forHttp("/connectors").forPort(8083).withStartupTimeout(Duration.ofMinutes(2)));
+            .waitingFor(Wait.forHttp("/connectors").forPort(8083));
 
     static Connection db;
 
