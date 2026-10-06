@@ -103,18 +103,19 @@ class DebeziumOutboxTest {
     /// Tx A takes the lower id but commits after tx B. The WAL is in commit order, so Debezium sees B, then A.
     @Test
     void aRowThatBecomesVisibleLateIsStillPublished() throws Exception {
-        var a = connect();
-        a.setAutoCommit(false);
-        insertOutbox(a, "A");   // lower id, not committed: not in the WAL yet
-        insertOutbox(db, "B");  // higher id, committed
+        try (var a = connect()) {
+            a.setAutoCommit(false);
+            insertOutbox(a, "A");   // lower id, not committed: not in the WAL yet
+            insertOutbox(db, "B");  // higher id, committed
 
-        assertEquals(Set.of("B"), keys(consume(1)));
+            assertEquals(Set.of("B"), keys(consume(1)));
 
-        a.commit();             // A's commit record lands in the WAL after B's
+            a.commit();             // A's commit record lands in the WAL after B's
 
-        var records = consume(2);
-        assertEquals(2, records.size());
-        assertEquals(List.of("B", "A"), records.stream().map(ConsumerRecord::key).toList(), "commit order");
+            var records = consume(2);
+            assertEquals(2, records.size());
+            assertEquals(List.of("B", "A"), records.stream().map(ConsumerRecord::key).toList(), "commit order");
+        }
     }
 
     // --- kafka connect ------------------------------------------------------------
@@ -168,7 +169,7 @@ class DebeziumOutboxTest {
     /// reads back only what it produced.
     @BeforeEach
     void startClean() throws Exception {
-        db.createStatement().execute("TRUNCATE orders, outbox RESTART IDENTITY");
+        db.createStatement().execute("SET lock_timeout = '5s'; TRUNCATE orders, outbox RESTART IDENTITY");
         var props = new Properties();
         props.put("bootstrap.servers", KAFKA.getBootstrapServers());
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
