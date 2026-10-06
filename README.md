@@ -25,5 +25,6 @@ Notes: `snapshot.mode=no_data` means rows that existed before the connector was 
 are not published. Deleting the connector does not drop its replication slot; the WAL
 grows until you do (`SELECT pg_drop_replication_slot('outbox_slot')`).
 
+Compared side by side in [outbox-compared](https://github.com/machado-vitor/outbox-compared).
 Siblings: [outbox-relay](https://github.com/machado-vitor/outbox-relay) (own poller, same table) and
 [outbox-jdbc-source](https://github.com/machado-vitor/outbox-jdbc-source) (the Kafka Connect poller that loses events).
