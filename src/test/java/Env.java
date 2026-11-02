@@ -45,10 +45,10 @@ class Env {
             .withCommand("postgres", "-c", "wal_level=logical")
             .withCopyFileToContainer(MountableFile.forHostPath("schema.sql"), "/docker-entrypoint-initdb.d/schema.sql");
 
-    static final KafkaContainer KAFKA = new KafkaContainer("apache/kafka:4.3.1")
+    static final KafkaContainer KAFKA = new KafkaContainer("apache/kafka:4.4.0")
             .withNetwork(NET).withNetworkAliases("kafka").withListener("kafka:19092");
 
-    static final GenericContainer<?> CONNECT = new GenericContainer<>("quay.io/debezium/connect:3.3.2.Final")
+    static final GenericContainer<?> CONNECT = new GenericContainer<>("quay.io/debezium/connect:3.7.0.Final")
             .withNetwork(NET).dependsOn(POSTGRES, KAFKA)
             .withEnv(Map.of(
                     "BOOTSTRAP_SERVERS", "kafka:19092",
